@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crystal Calculator - Akanksha Mishra</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@400;600&family=Orbitron:wght@500&display=swap" rel="stylesheet">
+</head>
+<body class="light-theme">
+
+    
+    <div class="calculator-container">
+        <header>
+            <h1 class="user-name">Akanksha Mishra</h1>
+            <div class="theme-toggle">
+                <input type="checkbox" id="theme-switch" />
+                <label for="theme-switch" class="toggle-label">
+                    <svg class="toggle-icon sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                    <svg class="toggle-icon moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    <div class="toggle-ball"></div>
+                </label>
+            </div>
+        </header>
+
+        <!-- Standard / Scientific Screen -->
+        <div class="screen" id="calc-screen">
+            <div class="history" id="history"></div>
+            <div class="display" id="display">0</div>
+        </div>
+
+        <!-- Conversions custom screen -->
+        <div id="conv-screen" class="screen hidden" style="padding: 12px 14px;">
+            <div class="conv-header-row">
+                <select class="category-select mini" id="conv-category" onchange="changeCategory()">
+                    <option value="length">Length</option>
+                    <option value="weight">Weight</option>
+                    <option value="area">Area</option>
+                    <option value="temp">Temperature</option>
+                </select>
+            </div>
+            
+            <div class="conv-data-row">
+                <div class="conv-box mini active" id="conv-box-1" onclick="setActiveBox(1)">
+                    <select id="conv-unit-1" onchange="calculateConv()"></select>
+                    <div class="conv-val" id="conv-val-1">1</div>
+                </div>
+                
+                <button class="swap-btn mini" onclick="swapConv()">⇄</button>
+                
+                <div class="conv-box mini" id="conv-box-2" onclick="setActiveBox(2)">
+                    <select id="conv-unit-2" onchange="calculateConv()"></select>
+                    <div class="conv-val" id="conv-val-2">0</div>
+                </div>
+            </div>
+        </div>
+
+        <nav class="mode-tabs">
+            <button class="tab-btn active" data-tab="standard">Standard</button>
+            <button class="tab-btn" data-tab="scientific">Scientific</button>
+            <button class="tab-btn" data-tab="convert">Conversions</button>
+        </nav>
+
+        <main id="calc-body" class="active-tab">
+            <!-- Scientific Rows -->
+            <div id="sci-rows" class="hidden">
+                <div class="grid scientific">
+                    <button class="btn sci" onclick="appendSci('sqrt')">√</button>
+                    <button class="btn sci" onclick="appendSci('cbrt')">∛</button>
+                    <button class="btn sci" onclick="appendSci('pow')">xʸ</button>
+                    <button class="btn sci" onclick="appendScientificConst('PI')">π</button>
+                    <button class="btn sci" onclick="appendScientificConst('E')">e</button>
+                </div>
+                <!-- Scientific Row 2 -->
+                <div class="grid scientific">
+                    <button class="btn sci" onclick="appendSci('sin')">sin</button>
+                    <button class="btn sci" onclick="appendSci('cos')">cos</button>
+                    <button class="btn sci" onclick="appendSci('tan')">tan</button>
+                    <button class="btn sci" onclick="appendSci('log')">log</button>
+                    <button class="btn sci" onclick="appendSci('ln')">ln</button>
+                </div>
+            </div>
+
+            <!-- Standard Buttons -->
+            <div class="grid standard">
+                <button class="btn opt" onclick="clearDisplay()">AC</button>
+                <button class="btn opt" onclick="backspace()">⌫</button>
+                <button class="btn opt" onclick="appendOperator('%')">%</button>
+                <button class="btn opt" onclick="appendOperator('/')">÷</button>
+                
+                <button class="btn" onclick="appendNumber('7')">7</button>
+                <button class="btn" onclick="appendNumber('8')">8</button>
+                <button class="btn" onclick="appendNumber('9')">9</button>
+                <button class="btn opt" onclick="appendOperator('*')">×</button>
+                
+                <button class="btn" onclick="appendNumber('4')">4</button>
+                <button class="btn" onclick="appendNumber('5')">5</button>
+                <button class="btn" onclick="appendNumber('6')">6</button>
+                <button class="btn opt" onclick="appendOperator('-')">-</button>
+                
+                <button class="btn" onclick="appendNumber('1')">1</button>
+                <button class="btn" onclick="appendNumber('2')">2</button>
+                <button class="btn" onclick="appendNumber('3')">3</button>
+                <button class="btn opt" onclick="appendOperator('+')">+</button>
+                
+                <button class="btn" onclick="appendNumber('0')">0</button>
+                <button class="btn" onclick="appendNumber('.')">.</button>
+                <button class="btn equals" onclick="calculate()" style="grid-column: span 2;">=</button>
+            </div>
+        </main>
+
+        <section id="convert-body" class="hidden">
+            <!-- Custom Keypad for Conversions -->
+            <div class="grid dialer">
+                <button class="btn" onclick="appendConv('7')">7</button>
+                <button class="btn" onclick="appendConv('8')">8</button>
+                <button class="btn" onclick="appendConv('9')">9</button>
+                
+                <button class="btn" onclick="appendConv('4')">4</button>
+                <button class="btn" onclick="appendConv('5')">5</button>
+                <button class="btn" onclick="appendConv('6')">6</button>
+                
+                <button class="btn" onclick="appendConv('1')">1</button>
+                <button class="btn" onclick="appendConv('2')">2</button>
+                <button class="btn" onclick="appendConv('3')">3</button>
+                
+                <button class="btn opt" onclick="clearConv()">AC</button>
+                <button class="btn" onclick="appendConv('0')">0</button>
+                <button class="btn" onclick="appendConv('.')">.</button>
+                
+                <button class="btn opt" onclick="backspaceConv()" style="grid-column: span 3;">⌫</button>
+            </div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
